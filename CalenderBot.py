@@ -235,4 +235,4 @@ async def on_message(message):
         
 
 client.loop.create_task(sendMeetingsPN())
-client.run('NDM5NTMzNDg0MDAwODA0ODY2.DcUjZQ.F39WfnwM9z9K4PJJqfsBX6vc1d0')
+client.run('You wish!')
