@@ -12,6 +12,9 @@ helpEmbed.add_field(name = 'Präfix', value = '``#``')
 helpEmbed.add_field(name = 'Befehle', value = '``newMeeting [Meeting] [DD.MM.YYYY, HH:MM] [Zeitverschiebung]`` fügt ein neues Meeting hinzu \n``newMeeting [Meeting] [DD.MM.YYYY, HH:MM] [Zeitverschiebung] @role`` fügt ein neues Meeting für alle mit dieser Rolle hinzu \n``deleteMeeting [Meeting] [DD.MM.YYYY, HH:MM]`` löscht alle Meetings mit dem Inhalt an dem Datum \n``myMeetings`` gibt alle deine Meetings aus \n``date``zeigt das datum \n``help`` sendet diese Hilfe')
 
 
+
+
+
 def checkSchaltjahr(year):
     if (int(year)-2016)/4 == int(int(year)-2016)/4 :
         return True
@@ -63,15 +66,13 @@ async def sendMeetingsPN():
     while not client.is_closed():
         date = time.strftime('%d.%m.%Y, %H:%M')
         for users in backendMeetings.keys():
-            i = 0
             for dates, dates2 in zip(backendMeetings[users], meetings[users]):
                 if str(dates) == date and str(backendMeetings[users][dates]) != '[]':
-                    await client.get_user(int(users)).send(str(backendMeetings[users][dates])[2:len(backendMeetings[users][dates])-3])
-                    v = backendMeetings[users][dates].pop(i)
-                    v2= meetings[users] [dates2].pop(i)
+                    meetingEmbed = discord.Embed(title="Benachrichtigung", description=str(backendMeetings[users][dates])[2:len(backendMeetings[users][dates])-3], color=discord.Colour.blue())               
+                    await client.get_user(int(users)).send(embed = meetingEmbed)
+                    v = backendMeetings[users][dates] = [] 
+                    v2= meetings[users][dates2] = []
                     break
-                else:
-                    i += 1
                  
         await asyncio.sleep(30) # task runs every 30 seconds
 
@@ -178,7 +179,7 @@ async def on_message(message):
         timeZoneEndpoint = sTimeZone(str(contentListForDate)[contentListSaver:])[1]
         groupContent = sTimeZone(str(contentListForDate)[contentListSaver:])[2]
         group = checkRole(str(groupContent), int(timeZoneEndpoint))
-        await message.channel.send('timezone: ' + str(timeZone) + ' | group: ' + str(group))
+        date = newTime(str(meetingDateVar), timeZone)
         if rightDate == False:
             await message.channel.send("Sie haben ein ungültiges Datum eingegeben!")
         else:
@@ -196,7 +197,7 @@ async def on_message(message):
                     backendListe = {str(newTime(str(meetingDateVar), timeZone)) : [str(contentList)]}
                     backendMeetings[str(message.author.id)] = backendListe
                     
-                    await message.channel.send(str(message.author.display_name) + ' hat ' + str(contentList) + " für den " + str(meetingDateVar) + ' hinzugefügt!')
+                    await message.channel.send(str(message.author.display_name) + ' hat ``' + str(contentList) + '`` für den ' + str(meetingDateVar) + ' hinzugefügt!')
                 else:
                     try:
                         meetings[str(message.author.id)][str(meetingDateVar)].append(str(contentList))
@@ -205,7 +206,7 @@ async def on_message(message):
                         meetings[str(message.author.id)][str(meetingDateVar)] = [str(contentList)]
                         backendMeetings[str(message.author.id)][str(date)] = [str(contentList)]
                         
-                    await message.channel.send(str(message.author.display_name) + ' hat ' + str(contentList) + " für den " + str(meetingDateVar) + ' hinzugefügt!')
+                    await message.channel.send(str(message.author.display_name) + ' hat ``' + str(contentList) + "`` für den " + str(meetingDateVar) + ' hinzugefügt!')
                         
             elif adminRole in message.author.roles:
                  for i in meetings.keys():
@@ -231,7 +232,7 @@ async def on_message(message):
                                          meetings[str(member.id)][str(meetingDateVar)] = [str(contentList)]
                                          backendMeetings[str(message.author.id)][str(newTime(str(meetingDateVar), timeZone))] = [str(contentList)]
            
-                     await message.channel.send(str(message.author.display_name) + ' hat ' + str(contentList) + " für den " + str(meetingDateVar) + ' für alle mit der Rolle ' + str(group) + ' hinzugefügt!')
+                     await message.channel.send(str(message.author.display_name) + ' hat ``' + str(contentList) + '`` für den ' + str(meetingDateVar) + ' für alle mit der Rolle ' + str(group) + ' hinzugefügt!')
                      
                  else:
                      await message.channel.send('Sie haben ein ungültiges Datum eingegeben!')
@@ -259,10 +260,15 @@ async def on_message(message):
         
         i = 0
         try:
-            await message.channel.send('meetingDateVar: ' + str(meetingDateVar))
             for content in meetings[str(message.author.id)][str(meetingDateVar)]:
                 if [str(content)] == [str(contentList)]:
+                    datesForBackend = None
+                    for dates, dates2 in zip(meetings[str(message.author.id)].keys(), backendMeetings[str(message.author.id)].keys()):
+                        if str(dates) == str(meetingDateVar):
+                            datesForBackend = dates2
+                            break                           
                     v = meetings[str(message.author.id)][str(meetingDateVar)].pop(i)
+                    v2 = backendMeetings[str(message.author.id)][datesForBackend].pop(i)
                     await message.channel.send("Dein Termin wurde erfolgreich gelöscht, " + str(message.author.display_name) + "!")      
                 i += 1
         except KeyError:
@@ -270,7 +276,6 @@ async def on_message(message):
         
         
     if message.content.startswith('#myMeetings'):
-        await message.channel.send(str(backendMeetings))
         if str(message.author.id) in meetings.keys():
             for date in meetings[str(message.author.id)].keys():
                 valueStr = ''
