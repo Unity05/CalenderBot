@@ -9,7 +9,7 @@ helpEmbed = discord.Embed(title="Hilfe für CalenderBot", url = 'https://github.
 myMeetingsEmbed = discord.Embed(title="MyMeetings", color=discord.Colour.blue())
 helpEmbed.set_footer(text = "bot by Unity5#2704 | special thanks to @Anorak#5830")
 helpEmbed.add_field(name = 'Präfix', value = '``#``')
-helpEmbed.add_field(name = 'Befehle', value = '``newMeeting [Meeting] [DD.MM.YYYY, HH:MM] [Zeitverschiebung]`` fügt ein neues Meeting hinzu \n``newMeeting [Meeting] [DD.MM.YYYY, HH:MM] [Zeitverschiebung] @role`` fügt ein neues Meeting für alle mit dieser Rolle hinzu \n``deleteMeeting [Meeting] [DD.MM.YYYY, HH:MM]`` löscht alle Meetings mit dem Inhalt an dem Datum \n``myMeetings`` gibt alle deine Meetings aus \n``date``zeigt das datum \n``help`` sendet diese Hilfe')
+helpEmbed.add_field(name = 'Befehle', value = '``newMeeting [Meeting] [DD.MM.YYYY, HH:MM] [Zeitverschiebung]`` fügt ein neues Meeting hinzu \n\n``newMeeting [Meeting] [DD.MM.YYYY, HH:MM] [Zeitverschiebung] @role`` fügt ein neues Meeting für alle mit dieser Rolle hinzu \n\n``deleteMeeting [Meeting] [DD.MM.YYYY, HH:MM]`` löscht alle Meetings mit dem Inhalt an dem Datum \n\n``myMeetings`` gibt alle deine Meetings aus \n\n``date`` zeigt das datum \n\n``help`` sendet diese Hilfe')
 
 
 
