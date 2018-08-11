@@ -612,5 +612,4 @@ async def on_message(message):
 client.loop.create_task(sendMeetingsPN())
 client.loop.create_task(sendPreMeetingsPN())
 
-#client.run('NDM5NTMzNDg0MDAwODA0ODY2.Di0DXg.0avvpYhHFNnUvMeCBjyMLzD3ZPs')
 client.run(os.environ['CALBOTTOKEN'])
