@@ -1,9 +1,26 @@
 import discord
+
+
+
 import time
+
+
+
 import datetime
+
+
+
 import json
+
+
+
 import asyncio
+
+
+
 import os
+
+
 
 
 
@@ -11,6 +28,8 @@ import os
 
 client = discord.Client()
 
+
+currentVersion = "1.2"
 
 
 meetingDateSP = 0
@@ -840,6 +859,29 @@ async def on_ready():
 
     await client.change_presence(activity=discord.Game(name='#help'))
 
+    try:
+
+        with open('__version__', 'r') as version_file:
+
+            version = version_file.read()
+
+            if str(version) == '"' + str(currentVersion) + '"':
+
+                pass
+
+            else:
+
+                updateFilesToNewVersion()
+
+    except FileNotFoundError:
+
+        #with open('__version__', 'w') as version_file1:
+
+            #standart_vers_file = {str(currentVersion):False}
+
+            #version_file1.write(json.dumps(standart_vers_file))
+
+        updateFilesToNewVersion()
 
 
     with open("meetingsFile", "r") as file:
@@ -857,6 +899,77 @@ async def on_ready():
         backendMeetings = json.load(file2)
 
         #print("backendMeetings: " + json.load(file2))  #löschen!!!
+
+
+
+
+
+def updateFilesToNewVersion():
+
+    with open('meetingsFile', 'r') as mF_read:
+
+        meetingsDict = json.load(mF_read)
+
+        newMeetingsDict = {}
+
+        for users in meetingsDict.keys():
+
+            #newMeetingsDict[users]
+
+            for dates in meetingsDict[users].keys():
+
+                #newMeetingsDict[users] = {d}
+
+                for contents in meetingsDict[users][dates]:
+
+                    try:
+
+                        newMeetingsDict[users][dates].append([contents, 'unique'])
+
+                    except KeyError:
+
+                        newMeetingsDict[users] = {dates:[[contents, 'unique']]}
+
+    with open('backendMeetingsFile', 'r') as bmF_read:
+
+        backendMeetingsDict = json.load(bmF_read)
+
+        newBackendMeetingsDict = {}
+
+        for users in backendMeetingsDict.keys():
+
+            #newMeetingsDict[users]
+
+            for dates in backendMeetingsDict[users].keys():
+
+                #newMeetingsDict[users] = {d}
+
+                for contents in backendMeetingsDict[users][dates]:
+
+                    try:
+
+                        newBackendMeetingsDict[users][dates].append([contents, 'unique'])
+
+                    except KeyError:
+
+                        newBackendMeetingsDict[users] = {dates:[[contents, 'unique']]}
+
+    with open('meetingsFile', 'w') as mF_write:
+
+        mF_write.write(json.dumps(newMeetingsDict))
+
+    with open('backendMeetingsFile', 'w') as bmF_write:
+
+        bmF_write.write(json.dumps(newBackendMeetingsDict))
+
+
+    with open('__version__', 'w') as version_file_3:
+
+        version_file_done = str(currentVersion)
+
+        version_file_3.write(json.dumps(version_file_done))
+
+
 
 
 
