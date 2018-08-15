@@ -16,5 +16,5 @@ A simple Discord Bot with meetings.
 
 # Run Bot
 
-1) add a system variable (variable: CALBOTTOKEN, value: your token)
-2) run command in docker: docker run -it -e "CALBOTTOKEN=your token" unity5/calendarbot:1.0
+* add a system variable (variable: CALBOTTOKEN, value: your token)
+* run command in docker: docker run -it -e "CALBOTTOKEN=your token" unity5/calendarbot:1.0
