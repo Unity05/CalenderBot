@@ -1,9 +1,27 @@
 import discord
+
+
+
 import time
+
+
+
 import datetime
+
+
+
 import json
+
+
+
 import asyncio
+
+
+
 import os
+
+
+
 
 
 
@@ -11,36 +29,31 @@ import os
 client = discord.Client()
 
 
-currentVersion = "1.2"
+currentVersion = "1.2"                                                                                                  #var to check if the version of the files is the latest
 
 
 meetingDateSP = 0
 
 
 
-helpEmbed = discord.Embed(title="Hilfe für CalenderBot", url='https://github.com/Unity05/CalenderBot/blob/master/README.md', field='Präfix', color=discord.Colour.blue())
-
-
-
-myMeetingsEmbed = discord.Embed(title="MyMeetings", color=discord.Colour.blue())
-
-
-
+helpEmbed = discord.Embed(title="Hilfe für CalenderBot",                                                                #helpEmbed for help-message
+                          url='https://github.com/Unity05/CalenderBot/blob/master/README.md',
+                          field='Präfix', color=discord.Colour.blue())
 helpEmbed.set_footer(text="bot by Unity5#2704 | special thanks to @Anorak#5830")
-helpEmbed.set_author(name='Unity5   GitHub: https://github.com/Unity05', url='https://github.com/Unity05', icon_url='https://avatars2.githubusercontent.com/u/38768420')
-
+helpEmbed.set_author(name='Unity5   GitHub: https://github.com/Unity05',
+                     url='https://github.com/Unity05',
+                     icon_url='https://avatars2.githubusercontent.com/u/38768420')
 helpEmbed.add_field(name='Präfix', value='``#``')
-
-
-
 helpEmbed.add_field(name='\n\nBefehle',
-                    value='``newMeeting [Meeting] [DD.MM.YYYY, HH:MM] [Zeitverschiebung] [Häufigkeit]`` fügt ein neues Meeting hinzu \n\n'
-                          '``newMeeting [Meeting] [DD.MM.YYYY, HH:MM] [Zeitverschiebung] [Häufigkeit] @role`` fügt ein neues Meeting für alle mit dieser Rolle hinzu \n\n'
-                          '``deleteMeeting [Meeting] [DD.MM.YYYY, HH:MM]`` löscht alle Meetings mit dem Inhalt an dem Datum \n\n'
+                    value='``newMeeting [Meeting] [DD.MM.YYYY, HH:MM] [Zeitverschiebung] [Häufigkeit]`` '
+                          'fügt ein neues Meeting hinzu \n\n'
+                          '``newMeeting [Meeting] [DD.MM.YYYY, HH:MM] [Zeitverschiebung] [Häufigkeit] @role`` '
+                          'fügt ein neues Meeting für alle mit dieser Rolle hinzu \n\n'
+                          '``deleteMeeting [Meeting] [DD.MM.YYYY, HH:MM]`` '
+                          'löscht alle Meetings mit dem Inhalt an dem Datum \n\n'
                           '``myMeetings`` gibt alle deine Meetings aus \n\n'
                           '``date`` zeigt das Datum \n\n'
                           '``help`` sendet diese Hilfe')
-
 helpEmbed.add_field(name='\n\nHäufigkeit',
                     value='``unique`` einmalig\n\n'
                     '``daily`` täglich\n\n'
@@ -48,6 +61,9 @@ helpEmbed.add_field(name='\n\nHäufigkeit',
                     '``monthly`` monatlich\n\n'
                     '``yearly`` jährlich')
 
+
+myMeetingsEmbed = discord.Embed(title="MyMeetings",                                                                     #myMeetingsEmbed for command #myMeetings
+                                color=discord.Colour.blue())
 
 
 
@@ -57,18 +73,13 @@ meetingsFile = {}
 backendMeetingsFile = {}
 
 
+meetings = {}                                                                                                           #dict for meetings (saves meeting-content and date in your time zone)
+
+backendMeetings = {}                                                                                                    #dict for meetings (saves meeting-content and the to utc converted date)
 
 
 
-meetings = {}
-
-
-
-backendMeetings = {}
-
-
-
-groupMeetings = {}
+#groupMeetings = {}
 
 
 
@@ -80,13 +91,19 @@ meetingDateVar = 'lol'
 
 def updateMeetingSaveFiles():
 
-     with open("meetingsFile", "w") as fout:
+    '''
+    replaces the meeting files content by meeting dicts
 
-         fout.write(json.dumps(meetings))
+    :return: None
+    '''
+    
+    with open("meetingsFile", "w") as fout:
 
-     with open("backendMeetingsFile", "w") as fout2:
+        fout.write(json.dumps(meetings))
 
-         fout2.write(json.dumps(backendMeetings))
+    with open("backendMeetingsFile", "w") as fout2:
+
+        fout2.write(json.dumps(backendMeetings))
 
 
 
@@ -95,6 +112,14 @@ def updateMeetingSaveFiles():
 
 
 def checkSchaltjahr(year):
+
+    '''
+    checks if the param (year) is a leapyear
+
+    :param year: the year
+
+    :return: boolean (True/False)
+    '''
 
     if (int(year) - 2016) / 4 == int(int(year) - 2016) / 4:
 
@@ -119,6 +144,14 @@ def checkSchaltjahr(year):
 
 
 def checkDate(content):
+
+    '''
+    checks if the param (content) is possible
+
+    :param content: the date
+
+    :return: boolean (True/False)
+    '''
 
     try:
 
@@ -246,6 +279,13 @@ def checkDate(content):
 
 async def sendPreMeetingsPN():
 
+    '''
+    sends PNs with meetings to the users
+    every 60 sec
+
+    :return: None
+    '''
+
     await client.wait_until_ready()
 
 
@@ -314,6 +354,13 @@ async def sendPreMeetingsPN():
 
 
 async def sendMeetingsPN():
+
+    '''
+    sends PNs 30 min before the meeting to the users
+    every 60 sec
+
+    :return: None
+    '''
 
     await client.wait_until_ready()
 
@@ -431,13 +478,21 @@ async def sendMeetingsPN():
 
         #updateMeetingSaveFiles()
 
-        await asyncio.sleep(30)  # task runs every 30 seconds
+        await asyncio.sleep(60)  # task runs every 60 seconds
 
 
 
 
 
 def meetingContent(content):
+
+    '''
+    splits the meeting content
+
+    :param content: meeting content
+
+    :return: meeting content-part
+    '''
 
     endPoint = list(content).index(']')
 
@@ -450,6 +505,16 @@ def meetingContent(content):
 
 
 def meetingDate(content, startPoint):
+
+    '''
+    splits the meeting content
+
+    :param content: meeting content
+
+    :param startPoint: start point of new meeting content-part
+
+    :return: meeting content-part
+    '''
 
     newContent = content[startPoint:]
 
@@ -467,6 +532,14 @@ def meetingDate(content, startPoint):
 
 def sTimeZone(content):
 
+    '''
+    filters the time zone-part from meeting content
+
+    :param content: meeting content
+
+    :return: meeting content-part
+    '''
+
     newContent = content[20:]
 
 
@@ -482,6 +555,16 @@ def sTimeZone(content):
 
 def checkRole(content, startPoint):
 
+    '''
+    filters the role ID-part from role content
+
+    :param content: role content
+
+    :param startPoint: start point of role content-part
+
+    :return: role ID
+    '''
+
     return content[startPoint + 6: len(content) - 1]
 
 
@@ -489,6 +572,23 @@ def checkRole(content, startPoint):
 
 
 def newTime(timeZone, mode:str, content="nothing", realTime=False, availableMinute=0):
+
+    '''
+    adds a minute / hour / day / week / month / year up to the date
+    updates (if necessary) the hour / day / month / year
+
+    :param timeZone: the time zone
+
+    :param mode: the mode (minute / hour / day / week / month / year)
+
+    :param content: date content
+
+    :param realTime: use current time (utc) or date content
+
+    :param availableMinute: minute content for real time
+
+    :return: new date
+    '''
 
     hour = content[12:14]
 
@@ -817,6 +917,14 @@ def newTime(timeZone, mode:str, content="nothing", realTime=False, availableMinu
 
 def checkMemberAlreadyInList(memeber):
 
+    '''
+    checks if member is already in dict
+
+    :param memeber: member ID
+
+    :return: boolean (True/False)
+    '''
+
     for i in meetings.keys():
 
 
@@ -836,6 +944,12 @@ def checkMemberAlreadyInList(memeber):
 @client.event
 
 async def on_ready():
+
+    '''
+    starts when client has started
+
+    :return: None
+    '''
 
     print('We have logged in as {0.user}'.format(client))
 
@@ -887,6 +1001,13 @@ async def on_ready():
 
 
 def updateFilesToNewVersion():
+
+    '''
+    checks if the version of the meeting files is the latest
+    updates (if necessary) the meeting files
+
+    :return: None
+    '''
 
     with open('meetingsFile', 'r') as mF_read:
 
@@ -964,6 +1085,13 @@ def updateFilesToNewVersion():
 @client.event
 
 async def on_message(message):
+
+    '''
+    is executed if a user sent a message
+
+    :param message: message
+
+    '''
 
     if message.author == client.user:
 
