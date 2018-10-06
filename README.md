@@ -5,9 +5,11 @@ A simple Discord Bot with meetings.
 # Commands:
 #newMeeting [Meeting] [DD.MM.YYYY, HH:MM] [time zone] [frequency]
 
-#newMeeting [Meeting] [DD.MM.YYYY, HH:MM] [time zone] [frequency] @role
+#newMeeting [Meeting] [DD.MM.YYYY, HH:MM] [time zone] [frequency] [role]
 
 #deleteMeeting [Meeting] [DD.MM.YYYY, HH:MM]
+
+#deleteMeeting [Meeting] [DD.MM.YYYY, HH:MM] [role]
 
 #myMeetings
 
